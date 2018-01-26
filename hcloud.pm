@@ -114,5 +114,10 @@ for my $o (qw(actions servers floating_ips locations datacenters images isos ser
         push(@EXPORT, "get$singular");
     }
 }
+for my $o (qw(actions metrics)) {
+    my $f = "getserver$o";
+    eval "sub $f(\$;\$) { my \$id=shift; getobjects(\"servers/\$id/${o}\", shift, '$o') }";
+    push(@EXPORT, $f);
+}
 
 1;
