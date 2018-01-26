@@ -7,10 +7,10 @@ hcloud - access Hetzner cloud services API
 =head1 SYNOPSIS
 
  use hcloud;
- for my $img (hcloud::getimages()) {
+ for my $img (getimages()) {
     print "$img->{id} $img->{name}\n";
  }
- my $img = hcloud::getimage(1);
+ my $img = getimage(1);
  print "$img->{id} $img->{name}\n";
 
 =head1 DESCRIPTION
@@ -35,6 +35,8 @@ package hcloud;
 use Carp;
 use LWP::UserAgent ();
 use JSON::XS;
+use base 'Exporter';
+our @EXPORT=();
 
 our $VERSION = 0.1;
 our $debug = $ENV{HCLOUDDEBUG}||0;
@@ -95,9 +97,11 @@ sub getoneobject($$;$)
 
 for my $o (qw(actions servers floating_ips locations datacenters images isos server_types ssh_keys pricing)) {
     eval "sub get${o}(;\$) { getobjects('${o}', shift) }";
+    push(@EXPORT, "get$o");
     if($o =~m/(.*)s$/) {
         my $singular = $1;
         eval "sub get${singular}(\$;\$) { getoneobject('${singular}', shift) }";
+        push(@EXPORT, "get$singular");
     }
 }
 
