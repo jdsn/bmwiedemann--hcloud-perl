@@ -1,3 +1,5 @@
+# This file is licensed under GPLv2. See the COPYING file for details.
+
 =head1 NAME
 
 hcloud - access Hetzner cloud services API
