@@ -1,4 +1,4 @@
-use Test::More tests=>5;
+use Test::More tests=>6;
 use lib '.';
 use hcloud;
 
@@ -13,6 +13,9 @@ is($img[0]->{name}, "ubuntu-16.04", "getimages");
 
 my @img = getimages("?name=debian-9");
 is($img[0]->{name}, "debian-9", "getimages with name filter");
+
+my @img = getimages({name=>"debian-9"});
+is($img[0]->{name}, "debian-9", "getimages with name filter from ref");
 
 my $pricing = getpricing();
 is($pricing->{currency}, "EUR", "getpricing");

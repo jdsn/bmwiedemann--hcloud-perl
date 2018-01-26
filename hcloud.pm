@@ -34,6 +34,7 @@ use strict;
 package hcloud;
 use Carp;
 use LWP::UserAgent ();
+use URI::Escape;
 use JSON::XS;
 use base 'Exporter';
 our @EXPORT=();
@@ -75,10 +76,19 @@ sub badreply($)
     carp "bad/unexpected API reply";
 }
 
+# in: hashref e.g. {name=>"foo", sort=>"type"}
+# out: url-encoded param string: "name=foo&sort=type"
+sub hash_to_uri_param($)
+{
+    my $h=shift;
+    return join('&', map {"$_=".uri_escape($h->{$_})} sort keys(%$h));
+}
+
 sub getobjects($;$$)
 {
     my $object = shift;
     my $extra = shift || "";
+    if(ref($extra) eq "HASH") {$extra="?".hash_to_uri_param($extra)}
     my $targetkey = shift || $object;
     my $result = apiget("v1/$object$extra");
     my $r = $result->{$targetkey};
@@ -92,7 +102,7 @@ sub getoneobject($$;$)
     my $object = shift;
     my $id = shift;
     my $extra = shift || "";
-    getobjects("${object}s", "/$id$extra", $object);
+    getobjects("${object}s/$id", $extra, $object);
 }
 
 for my $o (qw(actions servers floating_ips locations datacenters images isos server_types ssh_keys pricing)) {
