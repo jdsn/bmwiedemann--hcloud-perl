@@ -1,0 +1,5 @@
+*.swp
+MYMETA.json
+MYMETA.yml
+Makefile
+blib/
