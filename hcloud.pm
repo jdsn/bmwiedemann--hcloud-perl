@@ -38,7 +38,7 @@ use LWP::UserAgent ();
 use URI::Escape;
 use JSON::XS;
 use base 'Exporter';
-our @EXPORT=();
+our @EXPORT=qw(add_ssh_key rename_ssh_key);
 
 our $VERSION = 0.1;
 our $debug = $ENV{HCLOUDDEBUG}||0;
@@ -67,7 +67,7 @@ sub api_req($$;$)
         }
         print STDERR $response->content;
     }
-    return decode_json($response->content);
+    return decode_json($response->content||"{}");
 }
 
 sub api_get($)
@@ -128,10 +128,48 @@ for my $o (qw(actions servers floating_ips locations datacenters images isos ser
         push(@EXPORT, $f);
     }
 }
+for my $o (qw(server floating_ip ssh_key image)) {
+    my $f = "del_$o";
+    eval qq!sub $f(\$) { my \$id=shift;  api_req("DELETE", "v1/${o}s/\$id") }!;
+    push(@EXPORT, $f);
+}
 for my $o (qw(actions metrics)) {
     my $f = "get_server_$o";
     eval "sub $f(\$;\$) { my \$id=shift; get_objects(\"servers/\$id/${o}\", shift, '$o') }";
     push(@EXPORT, $f);
 }
+
+=head2 add_ssh_key($$)
+
+ Upload a new SSH Key with the given name and public_key.
+ Returns the new ssh_key object.
+ It can be used in calls for creating servers.
+
+=cut
+sub add_ssh_key($$)
+{
+    my $name = shift;
+    my $public_key = shift;
+    return req_objects("POST", "ssh_keys", undef, "ssh_key", {name=>$name, public_key=>$public_key});
+}
+
+=head2 rename_ssh_key($keyid, $newname)
+
+ Changes the name of a ssh_key to $newname
+ Returns the new ssh_key object.
+
+=cut
+sub rename_ssh_key($$)
+{
+    my $id = shift;
+    my $newname = shift;
+    return req_objects("PUT", "ssh_keys/$id", undef, "ssh_key", {name=>$newname});
+}
+
+=head2 del_ssh_key($keyid)
+
+ Deletes the ssh_key
+
+=cut
 
 1;
