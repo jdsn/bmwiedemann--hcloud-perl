@@ -72,8 +72,8 @@ sub apiget($)
 
 sub badreply($)
 {
-    print STDERR JSON::XS->new->pretty->encode( shift );
-    carp "bad/unexpected API reply";
+    print STDERR JSON::XS->new->pretty->canonical->encode( shift );
+    confess "bad/unexpected API reply";
 }
 
 # in: hashref e.g. {name=>"foo", sort=>"type"}

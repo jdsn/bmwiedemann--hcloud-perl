@@ -1,9 +1,13 @@
-use Test::More tests=>6;
+use Test::More tests=>8;
 use lib '.';
 use hcloud;
 
 # FIXME: tests need a token and server available
 # and will break when server output changes -> mock it
+
+my $ret = eval {hcloud::getobjects("testinvalid")};
+is($ret, undef, "invalid object access must fail");
+like  ($@, qr{bad/unexpected API reply at }, "nice error msg");
 
 my $img = getimage(1);
 is($img->{name}, "ubuntu-16.04", "getimage");
