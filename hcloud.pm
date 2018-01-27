@@ -47,11 +47,15 @@ our $UA = LWP::UserAgent->new(requests_redirectable=>[],
     agent=>"https://github.com/bmwiedemann/hcloud-perl $VERSION");
 our $token = `cat ~/.hcloudapitoken`; chomp($token);
 
-sub apireq($$)
+sub apireq($$;$)
 {
     my $method = shift;
     my $uri = $baseURI.shift;
+    my $request_body = shift;
     my $request = HTTP::Request->new($method, $uri);
+    if($request_body) {
+        $request->content(encode_json $request_body);
+    }
     $request->header("Authorization", "Bearer $token");
     my $response = $UA->request($request);
     if($debug) {
@@ -84,17 +88,24 @@ sub hash_to_uri_param($)
     return join('&', map {"$_=".uri_escape($h->{$_})} sort keys(%$h));
 }
 
-sub getobjects($;$$)
+sub reqobjects($$;$$$)
 {
+    my $method = shift;
     my $object = shift;
     my $extra = shift || "";
     if(ref($extra) eq "HASH") {$extra="?".hash_to_uri_param($extra)}
     my $targetkey = shift || $object;
-    my $result = apiget("v1/$object$extra");
+    my $request_body = shift;
+    my $result = apireq($method, "v1/$object$extra", $request_body);
     my $r = $result->{$targetkey};
     badreply($result) unless $r;
     if(ref($r) eq "ARRAY") { return @$r }
     return $r;
+}
+
+sub getobjects($;$$)
+{
+    reqobjects("GET", shift, shift, shift);
 }
 
 sub getoneobject($$;$)
