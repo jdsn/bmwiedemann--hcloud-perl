@@ -7,10 +7,10 @@ hcloud - access Hetzner cloud services API
 =head1 SYNOPSIS
 
  use hcloud;
- for my $img (getimages()) {
+ for my $img (get_images()) {
     print "$img->{id} $img->{name}\n";
  }
- my $img = getimage(1);
+ my $img = get_image(1);
  print "$img->{id} $img->{name}\n";
 
 =head1 DESCRIPTION
@@ -47,7 +47,7 @@ our $UA = LWP::UserAgent->new(requests_redirectable=>[],
     agent=>"https://github.com/bmwiedemann/hcloud-perl $VERSION");
 our $token = `cat ~/.hcloudapitoken`; chomp($token);
 
-sub apireq($$;$)
+sub api_req($$;$)
 {
     my $method = shift;
     my $uri = $baseURI.shift;
@@ -69,12 +69,12 @@ sub apireq($$;$)
     return decode_json($response->content);
 }
 
-sub apiget($)
+sub api_get($)
 {
-    return apireq("GET", shift);
+    return api_req("GET", shift);
 }
 
-sub badreply($)
+sub bad_reply($)
 {
     print STDERR JSON::XS->new->pretty->canonical->encode( shift );
     confess "bad/unexpected API reply";
@@ -88,7 +88,7 @@ sub hash_to_uri_param($)
     return join('&', map {"$_=".uri_escape($h->{$_})} sort keys(%$h));
 }
 
-sub reqobjects($$;$$$)
+sub req_objects($$;$$$)
 {
     my $method = shift;
     my $object = shift;
@@ -96,38 +96,40 @@ sub reqobjects($$;$$$)
     if(ref($extra) eq "HASH") {$extra="?".hash_to_uri_param($extra)}
     my $targetkey = shift || $object;
     my $request_body = shift;
-    my $result = apireq($method, "v1/$object$extra", $request_body);
+    my $result = api_req($method, "v1/$object$extra", $request_body);
     my $r = $result->{$targetkey};
-    badreply($result) unless $r;
+    bad_reply($result) unless $r;
     if(ref($r) eq "ARRAY") { return @$r }
     return $r;
 }
 
-sub getobjects($;$$)
+sub get_objects($;$$)
 {
-    reqobjects("GET", shift, shift, shift);
+    req_objects("GET", shift, shift, shift);
 }
 
-sub getoneobject($$;$)
+sub get_one_object($$;$)
 {
     my $object = shift;
     my $id = shift;
     my $extra = shift || "";
-    getobjects("${object}s/$id", $extra, $object);
+    get_objects("${object}s/$id", $extra, $object);
 }
 
 for my $o (qw(actions servers floating_ips locations datacenters images isos server_types ssh_keys pricing)) {
-    eval "sub get${o}(;\$) { getobjects('${o}', shift) }";
-    push(@EXPORT, "get$o");
+    my $f = "get_${o}";
+    eval "sub $f(;\$) { get_objects('${o}', shift) }";
+    push(@EXPORT, $f);
     if($o =~m/(.*)s$/) {
         my $singular = $1;
-        eval "sub get${singular}(\$;\$) { getoneobject('${singular}', shift) }";
-        push(@EXPORT, "get$singular");
+        $f = "get_${singular}";
+        eval "sub $f(\$;\$) { get_one_object('${singular}', shift) }";
+        push(@EXPORT, $f);
     }
 }
 for my $o (qw(actions metrics)) {
-    my $f = "getserver$o";
-    eval "sub $f(\$;\$) { my \$id=shift; getobjects(\"servers/\$id/${o}\", shift, '$o') }";
+    my $f = "get_server_$o";
+    eval "sub $f(\$;\$) { my \$id=shift; get_objects(\"servers/\$id/${o}\", shift, '$o') }";
     push(@EXPORT, $f);
 }
 
