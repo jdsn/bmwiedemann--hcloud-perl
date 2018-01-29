@@ -119,12 +119,19 @@ sub get_objects($;$$)
     req_objects("GET", shift, shift, shift);
 }
 
-sub get_one_object($$;$)
+sub req_one_object($$$;$$)
 {
+    my $method = shift;
     my $object = shift;
     my $id = shift;
     my $extra = shift || "";
-    get_objects("${object}s/$id", $extra, $object);
+    my $body = shift;
+    req_objects($method, "${object}s/$id", $extra, $object, $body);
+}
+
+sub get_one_object($$;$)
+{
+    req_one_object("GET", shift, shift, shift);
 }
 
 =head2 get_...s({name=>"foo", sort=>"name:asc"})
@@ -190,7 +197,7 @@ sub rename_ssh_key($$)
 {
     my $id = shift;
     my $newname = shift;
-    return req_objects("PUT", "ssh_keys/$id", undef, "ssh_key", {name=>$newname});
+    return req_one_object("PUT", "ssh_key", $id, undef, {name=>$newname});
 }
 
 =head2 del_ssh_key($keyid)
@@ -222,7 +229,7 @@ sub rename_server($$)
 {
     my $id = shift;
     my $newname = shift;
-    return req_objects("PUT", "servers/$id", undef, "server", {name=>$newname});
+    return req_one_object("PUT", "server", $id, undef, {name=>$newname});
 }
 
 =head2 do_server_action($serverid, $action, {arg=>"value"})
