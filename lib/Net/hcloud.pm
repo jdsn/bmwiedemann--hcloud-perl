@@ -295,6 +295,23 @@ sub do_floating_ip_action($$;$)
 
  Deletes the floating_ip.
 
+=head2 update_image($imageid, {type=>'snapshot', description=>$newdescription})
+
+ Changes the description or type of an image
+ Returns the new object
+
+=cut
+sub update_image($$)
+{
+    my $id = shift;
+    my $args = shift;
+    return req_one_object("PUT", "image", $id, undef, $args);
+}
+
+=head2 del_image($imageid)
+
+ Deletes the image.
+
 =cut
 
 1;
