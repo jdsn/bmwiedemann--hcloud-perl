@@ -212,8 +212,8 @@ sub rename_server($$)
 
  Do an action with the server. Possible actions are
  poweron reboot reset shutdown poweroff reset_password enable_rescue
- create_image rebuild change_type enable_backup disable_backup
- attach_iso detach_iso change_dns_ptr
+ disable_rescue create_image rebuild change_type enable_backup
+ disable_backup attach_iso detach_iso change_dns_ptr
 
 =cut
 sub do_server_action($$;$)
