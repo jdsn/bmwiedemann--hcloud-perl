@@ -13,6 +13,15 @@ hcloud - access Hetzner cloud services API
  my $img = get_image(1);
  print "$img->{id} $img->{name}\n";
 
+ my @keys = get_ssh_keys({name=>"mykey"});
+ my $key = $keys[0] || add_ssh_key("mykey", "ssh-rsa AAAA...");
+ my $server = add_server("myserver", "cx11", "debian-9",
+     {ssh_keys=>[$key->{id}]});
+ my $actions = get_server_actions($server->{id});
+ my $metrics = get_server_metrics($server->{id}, {type=>"cpu", start=>"2018-01-29T04:42:00Z", end=>"2018-01-29T04:46:00Z"});
+ do_server_action($server->{id}, "shutdown");
+ del_server($server->{id}); # Danger! kills server
+
 =head1 DESCRIPTION
 
  This module provides access to several APIs of Hetzner cloud services
@@ -28,6 +37,7 @@ hcloud - access Hetzner cloud services API
  Bernhard M. Wiedemann <hcloud-perl@lsmod.de>
  https://github.com/bmwiedemann/hcloud-perl
 
+=head1 FUNCTIONS
 =cut
 
 use strict;
@@ -37,7 +47,7 @@ use LWP::UserAgent ();
 use URI::Escape;
 use JSON::XS;
 use base 'Exporter';
-our @EXPORT=qw(add_ssh_key rename_ssh_key);
+our @EXPORT=qw(add_ssh_key rename_ssh_key add_server rename_server do_server_action);
 
 our $VERSION = 0.1;
 our $debug = $ENV{HCLOUDDEBUG}||0;
@@ -161,6 +171,49 @@ sub rename_ssh_key($$)
     my $id = shift;
     my $newname = shift;
     return req_objects("PUT", "ssh_keys/$id", undef, "ssh_key", {name=>$newname});
+}
+
+=head2 add_server($name, $type, $image, {datacenter=>1, ssh_keys=>[1234]})
+
+ Create a new server with the last parameter passing optional args
+
+=cut
+sub add_server($$$;$)
+{
+    my $name = shift;
+    my $server_type = shift;
+    my $image = shift;
+    my $optionalargs = shift||{};
+    my %args=(name=>$name, server_type=>$server_type, image=>$image, %$optionalargs);
+    return req_objects("POST", "servers", undef, "server", \%args);
+}
+
+=head2 rename_server($id, $newname)
+
+ Changes the name of a server to $newname
+
+=cut
+sub rename_server($$)
+{
+    my $id = shift;
+    my $newname = shift;
+    return req_objects("PUT", "servers/$id", undef, "server", {name=>$newname});
+}
+
+=head2 do_server_action($serverid, $action, {arg=>"value"})
+
+ Do an action on the server. Possible actions are
+ poweron reboot reset shutdown poweroff reset_password enable_rescue
+ create_image rebuild change_type enable_backup disable_backup
+ attach_iso detach_iso change_dns_ptr
+
+=cut
+sub do_server_action($$;$)
+{
+    my $id = shift;
+    my $action = shift;
+    my $extra = shift;
+    return req_objects("POST", "servers/$id/actions/$action", undef, "action", $extra);
 }
 
 1;
