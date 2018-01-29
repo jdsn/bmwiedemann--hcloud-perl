@@ -1,11 +1,11 @@
 use Test::More tests=>8;
-use lib '.';
-use hcloud;
+use lib 'lib';
+use Net::hcloud;
 
 # FIXME: tests need a token and server available
 # and will break when server output changes -> mock it
 
-my $ret = eval {hcloud::get_objects("testinvalid")};
+my $ret = eval {Net::hcloud::get_objects("testinvalid")};
 is($ret, undef, "invalid object access must fail");
 like  ($@, qr{bad/unexpected API reply at }, "nice error msg");
 

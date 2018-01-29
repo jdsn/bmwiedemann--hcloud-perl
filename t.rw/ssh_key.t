@@ -1,6 +1,6 @@
 use Test::More tests=>9;
-use lib '.';
-use hcloud;
+use lib 'lib';
+use Net::hcloud;
 
 # FIXME: tests need a token and server available
 # and will break when server output changes -> mock it

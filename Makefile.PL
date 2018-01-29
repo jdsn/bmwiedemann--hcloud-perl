@@ -1,9 +1,9 @@
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-  NAME	=> 'hcloud',
-  ABSTRACT_FROM => 'hcloud.pm',
-  VERSION_FROM => 'hcloud.pm',
+  NAME	=> 'Net::hcloud',
+  ABSTRACT_FROM => 'lib/Net/hcloud.pm',
+  VERSION_FROM => 'lib/Net/hcloud.pm',
   AUTHOR        => 'Bernhard M. Wiedemann (hcloud-perl@lsmod.de)',
   LICENSE => 'GPL',
   MIN_PERL_VERSION => '5.00405',

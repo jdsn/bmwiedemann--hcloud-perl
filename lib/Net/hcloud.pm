@@ -2,12 +2,12 @@
 
 =head1 NAME
 
-hcloud - access Hetzner cloud services API
+Net::hcloud - access Hetzner cloud services API
 
 =head1 SYNOPSIS
 
  # have ~/.hcloudapitoken - recommended to be chmod 0600
- use hcloud;
+ use Net::hcloud;
  for my $img (get_images()) {
     print "$img->{id} $img->{name}\n";
  }
@@ -42,7 +42,7 @@ hcloud - access Hetzner cloud services API
 =cut
 
 use strict;
-package hcloud;
+package Net::hcloud;
 use Carp;
 use LWP::UserAgent ();
 use URI::Escape;
