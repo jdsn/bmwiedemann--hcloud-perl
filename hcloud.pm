@@ -6,6 +6,7 @@ hcloud - access Hetzner cloud services API
 
 =head1 SYNOPSIS
 
+ # have ~/.hcloudapitoken - recommended to be chmod 0600
  use hcloud;
  for my $img (get_images()) {
     print "$img->{id} $img->{name}\n";
