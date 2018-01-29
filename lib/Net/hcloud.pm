@@ -48,7 +48,7 @@ use LWP::UserAgent ();
 use URI::Escape;
 use JSON::XS;
 use base 'Exporter';
-our @EXPORT=qw(add_ssh_key rename_ssh_key add_server rename_server do_server_action);
+our @EXPORT=qw(add_ssh_key rename_ssh_key add_server rename_server do_server_action add_floating_ip do_floating_ip_action);
 
 our $VERSION = 0.1;
 our $debug = $ENV{HCLOUDDEBUG}||0;
@@ -251,6 +251,49 @@ sub do_server_action($$;$)
 =head2 del_server($serverid)
 
  Deletes the server, losing all its data.
+
+=head2 add_floating_ip({server=>$serverid, description=>"foo", type=>"ipv6"})
+
+ Create a new floating_ip
+
+=cut
+sub add_floating_ip($)
+{
+    my %args=%{$_[0]};
+    $args{type} ||= "ipv4";
+    return req_objects("POST", "floating_ips", undef, "floating_ip", \%args);
+}
+
+=head2 update_floating_ip($floating_ipid, $newdescription)
+
+ Changes the description of a floating_ip to $newdescription
+ Returns the new object
+
+=cut
+sub update_floating_ip($$)
+{
+    my $id = shift;
+    my $newdescription = shift;
+    return req_one_object("PUT", "floating_ip", $id, undef, {description=>$newdescription});
+}
+
+=head2 do_floating_ip_action($floating_ipid, $action, {arg=>"value"})
+
+ Do an action with the floating_ip. Possible actions are
+ assign unassign change_dns_ptr
+
+=cut
+sub do_floating_ip_action($$;$)
+{
+    my $id = shift;
+    my $action = shift;
+    my $extra = shift;
+    return req_objects("POST", "floating_ips/$id/actions/$action", undef, "action", $extra);
+}
+
+=head2 del_floating_ip($floating_ipid)
+
+ Deletes the floating_ip.
 
 =cut
 
