@@ -48,7 +48,7 @@ use LWP::UserAgent ();
 use URI::Escape;
 use JSON::XS;
 use base 'Exporter';
-our @EXPORT=qw(add_ssh_key rename_ssh_key add_server rename_server do_server_action add_floating_ip do_floating_ip_action);
+our @EXPORT=qw(add_ssh_key add_server do_server_action add_floating_ip do_floating_ip_action);
 
 our $VERSION = 0.1;
 our $debug = $ENV{HCLOUDDEBUG}||0;
@@ -166,6 +166,9 @@ for my $o (qw(server floating_ip ssh_key image)) {
     my $f = "del_$o";
     eval qq!sub $f(\$) { my \$id=shift;  api_req("DELETE", "v1/${o}s/\$id") }!;
     push(@EXPORT, $f);
+    $f = "update_$o";
+    eval qq!sub $f(\$\$) { my \$id=shift;  req_one_object("PUT", "${o}", \$id, undef, shift) }!;
+    push(@EXPORT, $f);
 }
 for my $o (qw(actions metrics)) {
     my $f = "get_server_$o";
@@ -187,18 +190,10 @@ sub add_ssh_key($$)
     return req_objects("POST", "ssh_keys", undef, "ssh_key", {name=>$name, public_key=>$public_key});
 }
 
-=head2 rename_ssh_key($keyid, $newname)
+=head2 update_ssh_key($keyid, {name=>$newname})
 
  Changes the name of a ssh_key to $newname
  Returns the new ssh_key object.
-
-=cut
-sub rename_ssh_key($$)
-{
-    my $id = shift;
-    my $newname = shift;
-    return req_one_object("PUT", "ssh_key", $id, undef, {name=>$newname});
-}
 
 =head2 del_ssh_key($keyid)
 
@@ -219,18 +214,10 @@ sub add_server($$$;$)
     return req_objects("POST", "servers", undef, "server", \%args);
 }
 
-=head2 rename_server($serverid, $newname)
+=head2 update_server($serverid, {name=>$newname})
 
  Changes the name of a server to $newname
  Returns the new server object
-
-=cut
-sub rename_server($$)
-{
-    my $id = shift;
-    my $newname = shift;
-    return req_one_object("PUT", "server", $id, undef, {name=>$newname});
-}
 
 =head2 do_server_action($serverid, $action, {arg=>"value"})
 
@@ -264,18 +251,10 @@ sub add_floating_ip($)
     return req_objects("POST", "floating_ips", undef, "floating_ip", \%args);
 }
 
-=head2 update_floating_ip($floating_ipid, $newdescription)
+=head2 update_floating_ip($floating_ipid, {description=>$newdescription})
 
  Changes the description of a floating_ip to $newdescription
  Returns the new object
-
-=cut
-sub update_floating_ip($$)
-{
-    my $id = shift;
-    my $newdescription = shift;
-    return req_one_object("PUT", "floating_ip", $id, undef, {description=>$newdescription});
-}
 
 =head2 do_floating_ip_action($floating_ipid, $action, {arg=>"value"})
 
@@ -299,14 +278,6 @@ sub do_floating_ip_action($$;$)
 
  Changes the description or type of an image
  Returns the new object
-
-=cut
-sub update_image($$)
-{
-    my $id = shift;
-    my $args = shift;
-    return req_one_object("PUT", "image", $id, undef, $args);
-}
 
 =head2 del_image($imageid)
 

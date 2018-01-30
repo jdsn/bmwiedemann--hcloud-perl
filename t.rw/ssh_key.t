@@ -10,7 +10,7 @@ use Net::hcloud;
 my $newkey = add_ssh_key("test", "ssh-dss AAAAB3NzaC1kc3MAAACBAK14UGK8CohXq1mS/OZy0k/TVeUwsM5Smfpvat0gLQ/kPjl1CYr8flgB7qdYLJfp64LoLcivQQElLX9xxOgAig/v6PrzMT0b8UUKzLN3OZMng/YxD4kVYkaaLWWIGRbmeJY1k0SUv8Rm7ae+0UbU8hHfEzXGBikNFbuQIAQoMwuRAAAAFQCmJDjYwoikIHhkaDTXGvLW7HD1dQAAAIBq9iw4IPxDWp3fyo9sBLv6V7+x+C0MnBaC72vduwZ9vvh5NwoOtBoIULLVdha4GI1Kf5yUO0u6dyVSxbjfC6jg4VZyMSssvN7XUOK0SDzVffK5i0ByTaeKYg1a+fbonT0vbKuwGEUCtXuwDUfJybtZx4jK2AF2n8dd2mISqgelNQAAAIB0ncD+X2mUpRYs4IKeR/KhVgw4k47RDB4wo7BwXp75ptUCoHoKVdIknN+WjATqWa3oeIKlwUb+QqXvwHn0BVgrX4f+S6HzL8YnYPx6UZEDRGC3GDfQ8p8DN7s+brBawjo0aPwJIIdAh7T3XojWL/nRegeczKBRkFqpR/zq2ZfDgg== root\@lsmod.de");
 is($newkey->{name}, "test", "add_ssh_key");
 print STDERR "new key ID=$newkey->{id}\n";
-my $renamedkey = eval{rename_ssh_key($newkey->{id}, "test2")};
+my $renamedkey = eval{update_ssh_key($newkey->{id}, {name=>"test2"})};
 my @keys = eval{get_ssh_keys({name=>"test2"})};
 del_ssh_key($newkey->{id});
 
