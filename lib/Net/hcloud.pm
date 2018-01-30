@@ -127,6 +127,23 @@ sub get_one_object($$;$)
     get_objects("${object}s/$id", $extra, $object);
 }
 
+=head2 get_...s({name=>"foo", sort=>"name:asc"})
+
+ Get a list of objects, e.g. get_servers()
+
+=head2 get_...($id)
+
+ Get one object e.g. get_server($serverid)
+
+=head2 get_server_actions($serverid)
+
+ Get list of actions associated with a server
+
+=head2 get_server_metrics($serverid, {type=>"cpu", start=>"2018-01-29T04:42:00Z", end=>"2018-01-29T04:46:00Z"});
+
+ Get numbers about resource usage
+
+=cut
 for my $o (qw(actions servers floating_ips locations datacenters images isos server_types ssh_keys pricing)) {
     my $f = "get_${o}";
     eval "sub $f(;\$) { get_objects('${o}', shift) }";
