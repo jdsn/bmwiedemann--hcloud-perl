@@ -12,11 +12,13 @@ WriteMakefile(
       repository => 'http://github.com/bmwiedemann/hcloud-perl',
     },
   },
+  EXE_FILES => ['hcloudcli.pl'],
   BUILD_REQUIRES => {
     'Test::More' => 0,
   },
   PREREQ_PM    => {
     'JSON::XS' => 0,
     'LWP::UserAgent' => 0,
+    'Term::ReadLine::Gnu' => 0,
   },
 );
