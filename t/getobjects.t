@@ -12,17 +12,17 @@ like  ($@, qr{bad/unexpected API reply at }, "nice error msg");
 my $img = get_image(1);
 is($img->{name}, "ubuntu-16.04", "get_image");
 
-my @img = get_images();
-is($img[0]->{name}, "ubuntu-16.04", "get_images");
+my $img = get_images();
+is($img->[0]->{name}, "ubuntu-16.04", "get_images");
 
-@img = get_images("?name=debian-9");
-is($img[0]->{name}, "debian-9", "get_images with name filter");
+$img = get_images("?name=debian-9");
+is($img->[0]->{name}, "debian-9", "get_images with name filter");
 
-@img = get_images({name=>"debian-9"});
-is($img[0]->{name}, "debian-9", "get_images with name filter from ref");
+$img = get_images({name=>"debian-9"});
+is($img->[0]->{name}, "debian-9", "get_images with name filter from ref");
 
 my $pricing = get_pricing();
 is($pricing->{currency}, "EUR", "get_pricing");
 
-my @dc = get_datacenters();
-is($dc[0]->{name}, "fsn1-dc8", "get_datacenters");
+my $dc = get_datacenters();
+is($dc->[0]->{name}, "fsn1-dc8", "get_datacenters");

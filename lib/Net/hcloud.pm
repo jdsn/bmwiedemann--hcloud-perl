@@ -8,14 +8,14 @@ Net::hcloud - access Hetzner cloud services API
 
  # have ~/.hcloudapitoken - recommended to be chmod 0600
  use Net::hcloud;
- for my $img (get_images()) {
+ for my $img (@{get_images()}) {
     print "$img->{id} $img->{name}\n";
  }
  my $img = get_image(1);
  print "$img->{id} $img->{name}\n";
 
- my @keys = get_ssh_keys({name=>"mykey"});
- my $key = $keys[0] || add_ssh_key("mykey", "ssh-rsa AAAA...");
+ my $keys = get_ssh_keys({name=>"mykey"});
+ my $key = $keys->[0] || add_ssh_key("mykey", "ssh-rsa AAAA...");
  my $server = add_server("myserver", "cx11", "debian-9",
      {ssh_keys=>[$key->{id}]});
  my $actions = get_server_actions($server->{id});
@@ -110,7 +110,6 @@ sub req_objects($$;$$$)
     my $result = api_req($method, "v1/$object$extra", $request_body);
     my $r = $result->{$targetkey};
     bad_reply($result) unless $r;
-    if(ref($r) eq "ARRAY") { return @$r }
     return $r;
 }
 

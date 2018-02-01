@@ -11,7 +11,7 @@ my $newkey = add_ssh_key("test", "ssh-dss AAAAB3NzaC1kc3MAAACBAK14UGK8CohXq1mS/O
 is($newkey->{name}, "test", "add_ssh_key");
 print STDERR "new key ID=$newkey->{id}\n";
 my $renamedkey = eval{update_ssh_key($newkey->{id}, {name=>"test2"})};
-my @keys = eval{get_ssh_keys({name=>"test2"})};
+my $keys = eval{get_ssh_keys({name=>"test2"})};
 del_ssh_key($newkey->{id});
 
 is($renamedkey->{name}, "test2", "rename changed name");
@@ -19,9 +19,9 @@ is($renamedkey->{id}, $newkey->{id}, "rename kept id");
 is($renamedkey->{fingerprint}, $newkey->{fingerprint}, "rename kept fingerprint");
 is($renamedkey->{public_key}, $newkey->{public_key}, "rename kept public_key");
 
-is($#keys, 0, "1 matching key returned");
-is($keys[0]->{name}, $renamedkey->{name}, "renamed key found has correct name");
-is($keys[0]->{id}, $renamedkey->{id}, "renamed key found has correct id");
+is($#$keys, 0, "1 matching key returned");
+is($keys->[0]->{name}, $renamedkey->{name}, "renamed key found has correct name");
+is($keys->[0]->{id}, $renamedkey->{id}, "renamed key found has correct id");
 
 my $nokey = eval {get_ssh_key($newkey->{id})};
 is($nokey, undef, "key gone after delete");

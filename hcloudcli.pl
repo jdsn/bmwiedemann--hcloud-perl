@@ -6,12 +6,12 @@ use lib 'lib';
 use Net::hcloud;
 
 # example usage:
-# json list output:
-# ./hcloudcli.pl '[get_images]'
 # json obj output:
+# ./hcloudcli.pl 'get_images'
 # ./hcloudcli.pl 'get_images {name=>"debian-9"}'
 # ./hcloudcli.pl 'get_image 1'
-# ./hcloudcli.pl '(get_images {name=>"debian-9"})[0]->{id}'
+# ./hcloudcli.pl '(get_images {name=>"debian-9"})->[0]->{id}'
+# ./hcloudcli.pl "update_ssh_key 1234, {name=>'foo'}"
 # ./hcloudcli.pl 1+2
 # raw value output:
 # ./hcloudcli.pl '.get_image(1)->{name}'
@@ -53,6 +53,7 @@ sub hcloud_completion
 
 sub help()
 { system('perldoc Net::hcloud') }
+sub quit() { exit 0 }
 
 my $term = Term::ReadLine->new('hcloud');
 $term->Attribs->{completion_word} = [@Net::hcloud::EXPORT];
