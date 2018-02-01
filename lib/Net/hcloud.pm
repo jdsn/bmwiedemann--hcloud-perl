@@ -50,7 +50,7 @@ use JSON::XS;
 use base 'Exporter';
 our @EXPORT=qw(add_ssh_key add_server do_server_action add_floating_ip do_floating_ip_action);
 
-our $VERSION = 0.1;
+our $VERSION = 0.21;
 our $debug = $ENV{HCLOUDDEBUG}||0;
 our $baseURI = "https://api.hetzner.cloud/";
 our $UA = LWP::UserAgent->new(requests_redirectable=>[],
