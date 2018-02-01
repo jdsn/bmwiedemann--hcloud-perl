@@ -1,4 +1,4 @@
-use Test::More tests=>9;
+use Test::More tests=>10;
 
 sub c(@)
 {
@@ -17,6 +17,7 @@ is(c('1+2'), "3\n", "default number out");
 is(c('-f', 'json', '"foo"."bar"'), "\"foobar\"\n", "json string out");
 is(c('.r "foo"."bar"'), "foobar\n", "raw string out");
 is(c('.j [1, "foo"]'), "[\n   1,\n   \"foo\"\n]\n", "json out");
+is(c('.y [1, "foo"]'), "---\n- 1\n- foo\n", "yaml out");
 is(c('.csv (1, 7, "foo")'), "1\t7\tfoo\n", "csv out");
 is(c('-f', 'csv', '(1, 7, "foo")'), "1\t7\tfoo\n", "-f csv out");
 is(c('.s {name=>"foo bar\\\\slash\"quote", foo=>27}'), "foo=\"27\"\nname=\"foo bar\\\\slash\\\"quote\"\n", "shell out");

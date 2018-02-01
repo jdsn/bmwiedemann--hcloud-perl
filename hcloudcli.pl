@@ -24,7 +24,7 @@ use Net::hcloud;
 $| = 1;
 our $encoder = JSON::XS->new->allow_nonref->pretty->canonical;
 our $defaultoutputformat = "json";
-our %outputformatabbrev = (c=>"csv", "j"=>"json", "r"=>"raw", "s"=>"shell");
+our %outputformatabbrev = (c=>"csv", j=>"json", r=>"raw", s=>"shell", y=>"yaml");
 sub jsonout(@) {$encoder->encode($_[0])}
 sub rawout(@) { @_, "\n" }
 sub csvout(@) { join("\t", @_)."\n" }
@@ -38,6 +38,10 @@ sub shellout(@) {
         }
         (sort keys %{$_[0]}))
 }
+eval {
+    require YAML;
+    sub yamlout(@) { YAML::Dump(@_) }
+};
 
 sub run_line($)
 {

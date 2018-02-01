@@ -15,6 +15,7 @@ WriteMakefile(
   EXE_FILES => ['hcloudcli.pl'],
   BUILD_REQUIRES => {
     'Test::More' => 0,
+    'YAML' => 0,
   },
   PREREQ_PM    => {
     'JSON::XS' => 0,
