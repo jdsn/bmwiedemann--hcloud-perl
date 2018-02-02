@@ -28,8 +28,8 @@ Net::hcloud - access Hetzner cloud services API
  This module provides access to several APIs of Hetzner cloud services
 
  currently it knows about these objects:
- actions servers floating_ips locations datacenters images isos server_types
- ssh_keys pricing
+ actions servers floating_ips locations datacenters images isos
+ server_types ssh_keys pricing
 
  See https://docs.hetzner.cloud/ for which data fields are returned.
 
