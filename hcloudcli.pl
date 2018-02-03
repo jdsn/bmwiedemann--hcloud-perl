@@ -28,9 +28,18 @@ our $defaultoutputformat = "json";
 our %outputformatabbrev = (c=>"csv", j=>"json", r=>"raw", s=>"shell", y=>"yaml");
 sub jsonout(@) {$encoder->encode($_[0])}
 sub rawout(@) { @_, "\n" }
+sub flatten_hash($)
+{
+    return map {
+	$_[0]->{$_}||""
+    } sort keys(%{$_[0]});
+}
 sub csvout(@) {
     my @obj = @_;
     if(ref($obj[0]) ne "ARRAY") { @obj = [@obj] }
+    if(ref($obj[0]->[0]) eq "HASH") {
+        @obj = map {[flatten_hash($_)]} @{$obj[0]};
+    }
     join("", map {
         join("\t", @$_)."\n"
     } @obj)
