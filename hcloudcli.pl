@@ -17,6 +17,7 @@ use Net::hcloud;
 # ./hcloudcli.pl '.raw get_image(1)->{name}'
 # ./hcloudcli.pl -f raw 'get_image(1)->{name}'
 # ./hcloudcli.pl ".c get 'image', 1, 'name', 'type'"
+# ./hcloudcli.pl ".csv get 'images', 'id', 'name'"
 # ./hcloudcli.pl ".shell get 'image', 1"
 # interactive mode:
 # ./hcloudcli.pl
@@ -27,7 +28,13 @@ our $defaultoutputformat = "json";
 our %outputformatabbrev = (c=>"csv", j=>"json", r=>"raw", s=>"shell", y=>"yaml");
 sub jsonout(@) {$encoder->encode($_[0])}
 sub rawout(@) { @_, "\n" }
-sub csvout(@) { join("\t", @_)."\n" }
+sub csvout(@) {
+    my @obj = @_;
+    if(ref($obj[0]) ne "ARRAY") { @obj = [@obj] }
+    join("", map {
+        join("\t", @$_)."\n"
+    } @obj)
+}
 sub shellout(@) {
     if(ref($_[0]) eq "ARRAY") { $_[0] = $_[0]->[0] }
     join("",
@@ -82,9 +89,19 @@ sub help()
 { system('perldoc Net::hcloud') }
 sub quit() { exit 0 }
 
-sub get($$;@)
+sub get($;@)
 {
     my $type = shift;
+    if($type =~ m/s$/) {
+        my $obj = Net::hcloud::get_objects($type);
+        if(@_) {
+            return map {
+                my $oneobj = $_;
+                [map {$oneobj->{$_}} @_]
+            } @$obj;
+        }
+        return $obj;
+    }
     my $id = shift;
     my $obj = Net::hcloud::get_one_object($type, $id);
     if(@_) {

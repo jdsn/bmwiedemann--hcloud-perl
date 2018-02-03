@@ -1,4 +1,4 @@
-use Test::More tests=>10;
+use Test::More tests=>11;
 
 sub c(@)
 {
@@ -22,5 +22,6 @@ is(c('.csv (1, 7, "foo")'), "1\t7\tfoo\n", "csv out");
 is(c('-f', 'csv', '(1, 7, "foo")'), "1\t7\tfoo\n", "-f csv out");
 is(c('.s {name=>"foo bar\\\\slash\"quote", foo=>27}'), "foo=\"27\"\nname=\"foo bar\\\\slash\\\"quote\"\n", "shell out");
 is(c(".c get 'image', 1, 'name', 'type'"), "ubuntu-16.04\tsystem\n", "get element extraction");
+is(c(".c get 'images', 'id'"), "1\n2\n3\n4\n", "get images and csv array output");
 #is(c('.raw get_image(1)->{name}'), "ubuntu-16.04\n", "raw image type");
 is(c('(get_images {name=>"debian-9"})->[0]->{id}'), "2\n", "get_images");
