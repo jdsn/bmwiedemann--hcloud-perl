@@ -95,7 +95,7 @@ sub bad_reply($)
 # out: url-encoded param string: "name=foo&sort=type"
 sub hash_to_uri_param($)
 {
-    my $h=shift;
+    my $h = shift;
     return join('&', map {"$_=".uri_escape($h->{$_})} sort keys(%$h));
 }
 
