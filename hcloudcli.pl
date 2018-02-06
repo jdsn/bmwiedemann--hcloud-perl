@@ -6,6 +6,8 @@ use lib 'lib';
 use Net::hcloud;
 
 # example usage:
+# ./hcloudcli.pl help
+# ./hcloudcli.pl 'help "add_server"'
 # json obj output (-f json is default):
 # ./hcloudcli.pl 'get_images'
 # ./hcloudcli.pl 'get_images {name=>"debian-9"}'
@@ -94,8 +96,12 @@ sub hcloud_completion
     return Term::ReadLine::Gnu->list_completion_function($text, $state);
 }
 
-sub help()
-{ system('perldoc Net::hcloud') }
+sub help(;$)
+{
+    my $search = shift||"";
+    if($search) { $search = "| grep -A3 $search" }
+    system("perldoc Net::hcloud $search")
+}
 sub quit() { exit 0 }
 
 sub get($;@)

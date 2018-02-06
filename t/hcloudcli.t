@@ -1,4 +1,4 @@
-use Test::More tests=>13;
+use Test::More tests=>15;
 
 sub c(@)
 {
@@ -22,6 +22,8 @@ is(c('-f', 'json', '"foo"."bar"'), "\"foobar\"\n", "json string out");
 is(c('.r "foo"."bar"', ".r \@{$arrayin}"), "foobar\n1foo\n", "raw string+array out");
 is(c(".j $arrayin"), "[\n   1,\n   \"foo\"\n]\n", "json out");
 is(c('.csv (1, 7, "foo")'), "1\t7\tfoo\n", "csv out");
+like(c('help'), qr/Bernhard M. Wiedemann.*Create a new server/s, "help");
+like(c('help "add_server"'), qr/Create a new server/, "topic-specific help");
 is(c('-f', 'csv', '(1, 7, "foo")', $arrayin), "1\t7\tfoo\n1\tfoo\n", "-f csv out");
 is(c('.s {name=>"foo bar\\\\slash\"quote", foo=>27}'), "foo=\"27\"\nname=\"foo bar\\\\slash\\\"quote\"\n", "shell out");
 is(c(".c $hashin", ".r '--'", ".c [$hashin]"), "${hashcsv}--\n$hashcsv", "hash csv");
