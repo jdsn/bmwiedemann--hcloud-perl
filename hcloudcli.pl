@@ -125,5 +125,4 @@ $term->Attribs->{'completion_entry_function'} = \&hcloud_completion;
 my $prompt = "> ";
 while ( defined ($_ = $term->readline($prompt)) ) {
     run_line($_);
-    $term->addhistory($_) if /\S/;
 }
