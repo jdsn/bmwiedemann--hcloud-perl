@@ -175,11 +175,12 @@ for my $o (qw(actions metrics)) {
     push(@EXPORT, $f);
 }
 
-=head2 add_ssh_key($$)
+=head2 add_ssh_key($name, $pubkey)
 
- Upload a new SSH Key with the given name and public_key.
+ Upload a new SSH key with the given name and public_key.
  Returns the new ssh_key object.
- It can be used in calls for creating servers.
+ The key id can be used in calls for creating servers
+ and enabling the rescue system.
 
 =cut
 sub add_ssh_key($$)
